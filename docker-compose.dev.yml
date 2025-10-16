@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: parking-garage-db
+    environment:
+      POSTGRES_DB: parking_garage
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - parking-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: parking-garage-app
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/parking_garage
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      JPA_DDL_AUTO: update
+      SHOW_SQL: "true"
+      SPRING_PROFILES_ACTIVE: dev
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src:ro
+      - ./target:/app/target
+    networks:
+      - parking-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  parking-network:
+    driver: bridge
