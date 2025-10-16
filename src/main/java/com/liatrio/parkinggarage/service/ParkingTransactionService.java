@@ -124,6 +124,11 @@ public class ParkingTransactionService {
                 .build();
         
         ParkingTransaction savedTransaction = transactionRepository.save(transaction);
+        
+        // Update bidirectional relationships
+        parkingSpot.getTransactions().add(savedTransaction);
+        car.getTransactions().add(savedTransaction);
+        
         log.info("Car {} checked in at spot {} with transaction id: {}", 
                 request.getLicensePlate(), request.getSpotIdentifier(), savedTransaction.getId());
         
