@@ -72,6 +72,8 @@ public class EntityMapper {
                 .spotNumber(transaction.getParkingSpot().getSpotNumber())
                 .checkInTime(transaction.getCheckInTime())
                 .checkOutTime(transaction.getCheckOutTime())
+                .parkingFee(transaction.getParkingFee())
+                .durationInHours(transaction.getDurationInHours())
                 .notes(transaction.getNotes())
                 .active(transaction.isActive())
                 .build();

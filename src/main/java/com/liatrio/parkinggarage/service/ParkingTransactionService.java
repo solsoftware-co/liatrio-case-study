@@ -29,6 +29,7 @@ public class ParkingTransactionService {
     private final ParkingTransactionRepository transactionRepository;
     private final ParkingSpotRepository parkingSpotRepository;
     private final CarRepository carRepository;
+    private final BillingService billingService;
     private final EntityMapper entityMapper;
 
     @Transactional(readOnly = true)
@@ -154,15 +155,22 @@ public class ParkingTransactionService {
                 ));
         
         // Complete the transaction
-        transaction.setCheckOutTime(LocalDateTime.now());
+        LocalDateTime checkOutTime = LocalDateTime.now();
+        transaction.setCheckOutTime(checkOutTime);
+        
+        // Calculate parking fee
+        Double parkingFee = billingService.calculateParkingFee(transaction.getCheckInTime(), checkOutTime);
+        transaction.setParkingFee(parkingFee);
+        
         if (request.getNotes() != null && !request.getNotes().isEmpty()) {
             String existingNotes = transaction.getNotes();
             transaction.setNotes(existingNotes != null ? existingNotes + " | " + request.getNotes() : request.getNotes());
         }
         
         ParkingTransaction completedTransaction = transactionRepository.save(transaction);
-        log.info("Car {} checked out from spot {} with transaction id: {}", 
-                transaction.getCar().getLicensePlate(), request.getSpotIdentifier(), completedTransaction.getId());
+        log.info("Car {} checked out from spot {} with transaction id: {} - Fee: ${}", 
+                transaction.getCar().getLicensePlate(), request.getSpotIdentifier(), 
+                completedTransaction.getId(), parkingFee);
         
         return entityMapper.toTransactionDto(completedTransaction);
     }
@@ -186,11 +194,17 @@ public class ParkingTransactionService {
                 ));
         
         // Complete the transaction
-        transaction.setCheckOutTime(LocalDateTime.now());
+        LocalDateTime checkOutTime = LocalDateTime.now();
+        transaction.setCheckOutTime(checkOutTime);
+        
+        // Calculate parking fee
+        Double parkingFee = billingService.calculateParkingFee(transaction.getCheckInTime(), checkOutTime);
+        transaction.setParkingFee(parkingFee);
         
         ParkingTransaction completedTransaction = transactionRepository.save(transaction);
-        log.info("Car {} checked out from spot {} with transaction id: {}", 
-                licensePlate, transaction.getParkingSpot().getSpotIdentifier(), completedTransaction.getId());
+        log.info("Car {} checked out from spot {} with transaction id: {} - Fee: ${}", 
+                licensePlate, transaction.getParkingSpot().getSpotIdentifier(), 
+                completedTransaction.getId(), parkingFee);
         
         return entityMapper.toTransactionDto(completedTransaction);
     }

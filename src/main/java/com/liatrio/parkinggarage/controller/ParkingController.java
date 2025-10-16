@@ -1,8 +1,10 @@
 package com.liatrio.parkinggarage.controller;
 
+import com.liatrio.parkinggarage.dto.BillingConfigDto;
 import com.liatrio.parkinggarage.dto.CheckInRequest;
 import com.liatrio.parkinggarage.dto.CheckOutRequest;
 import com.liatrio.parkinggarage.dto.ParkingTransactionDto;
+import com.liatrio.parkinggarage.service.BillingService;
 import com.liatrio.parkinggarage.service.ParkingTransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,6 +23,7 @@ import java.util.List;
 public class ParkingController {
 
     private final ParkingTransactionService parkingTransactionService;
+    private final BillingService billingService;
 
     @PostMapping("/check-in")
     @Operation(summary = "Check in a car to a parking spot")
@@ -68,5 +71,16 @@ public class ParkingController {
     @Operation(summary = "Get parking transactions by car ID")
     public ResponseEntity<List<ParkingTransactionDto>> getTransactionsByCarId(@PathVariable Long carId) {
         return ResponseEntity.ok(parkingTransactionService.getTransactionsByCarId(carId));
+    }
+
+    @GetMapping("/billing/config")
+    @Operation(summary = "Get billing configuration")
+    public ResponseEntity<BillingConfigDto> getBillingConfig() {
+        BillingConfigDto config = BillingConfigDto.builder()
+                .hourlyRate(billingService.getHourlyRate())
+                .minimumCharge(billingService.getMinimumCharge())
+                .gracePeriodMinutes(billingService.getGracePeriodMinutes())
+                .build();
+        return ResponseEntity.ok(config);
     }
 }

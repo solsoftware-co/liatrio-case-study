@@ -33,6 +33,10 @@ public class ParkingTransactionDto {
     
     private LocalDateTime checkOutTime;
     
+    private Double parkingFee;
+    
+    private Double durationInHours;
+    
     private String notes;
     
     private Boolean active;

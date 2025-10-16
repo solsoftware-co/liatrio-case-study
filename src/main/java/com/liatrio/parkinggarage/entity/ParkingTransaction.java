@@ -35,6 +35,9 @@ public class ParkingTransaction {
     private LocalDateTime checkOutTime;
 
     @Column
+    private Double parkingFee;
+
+    @Column
     private String notes;
 
     /**
@@ -43,5 +46,16 @@ public class ParkingTransaction {
     @Transient
     public boolean isActive() {
         return checkOutTime == null;
+    }
+    
+    /**
+     * Get parking duration in hours
+     */
+    @Transient
+    public Double getDurationInHours() {
+        if (checkInTime == null) return 0.0;
+        LocalDateTime endTime = checkOutTime != null ? checkOutTime : LocalDateTime.now();
+        long minutes = java.time.Duration.between(checkInTime, endTime).toMinutes();
+        return minutes / 60.0;
     }
 }
