@@ -38,6 +38,9 @@ class ParkingTransactionServiceTest {
     private CarRepository carRepository;
 
     @Mock
+    private BillingService billingService;
+
+    @Mock
     private EntityMapper entityMapper;
 
     @InjectMocks
@@ -194,6 +197,8 @@ class ParkingTransactionServiceTest {
         when(parkingSpotRepository.findBySpotIdentifier("F1-A-01")).thenReturn(Optional.of(parkingSpot));
         when(transactionRepository.findByParkingSpotIdAndCheckOutTimeIsNull(1L))
                 .thenReturn(Optional.of(transaction));
+        when(billingService.calculateParkingFee(any(LocalDateTime.class), any(LocalDateTime.class)))
+                .thenReturn(5.00);
         when(transactionRepository.save(any(ParkingTransaction.class))).thenReturn(transaction);
         when(entityMapper.toTransactionDto(transaction)).thenReturn(transactionDto);
 
@@ -203,6 +208,8 @@ class ParkingTransactionServiceTest {
         // Assert
         assertNotNull(result);
         assertNotNull(transaction.getCheckOutTime());
+        assertEquals(5.00, transaction.getParkingFee());
+        verify(billingService, times(1)).calculateParkingFee(any(LocalDateTime.class), any(LocalDateTime.class));
         verify(transactionRepository, times(1)).save(transaction);
     }
 
@@ -224,6 +231,8 @@ class ParkingTransactionServiceTest {
         when(carRepository.findByLicensePlate("ABC-123")).thenReturn(Optional.of(car));
         when(transactionRepository.findByCarIdAndCheckOutTimeIsNull(1L))
                 .thenReturn(Optional.of(transaction));
+        when(billingService.calculateParkingFee(any(LocalDateTime.class), any(LocalDateTime.class)))
+                .thenReturn(5.00);
         when(transactionRepository.save(any(ParkingTransaction.class))).thenReturn(transaction);
         when(entityMapper.toTransactionDto(transaction)).thenReturn(transactionDto);
 
@@ -233,6 +242,8 @@ class ParkingTransactionServiceTest {
         // Assert
         assertNotNull(result);
         assertNotNull(transaction.getCheckOutTime());
+        assertEquals(5.00, transaction.getParkingFee());
+        verify(billingService, times(1)).calculateParkingFee(any(LocalDateTime.class), any(LocalDateTime.class));
         verify(transactionRepository, times(1)).save(transaction);
     }
 

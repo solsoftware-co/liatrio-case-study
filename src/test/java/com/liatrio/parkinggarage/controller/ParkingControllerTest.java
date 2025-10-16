@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liatrio.parkinggarage.dto.CheckInRequest;
 import com.liatrio.parkinggarage.dto.CheckOutRequest;
 import com.liatrio.parkinggarage.dto.ParkingTransactionDto;
+import com.liatrio.parkinggarage.service.BillingService;
 import com.liatrio.parkinggarage.service.ParkingTransactionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,9 @@ class ParkingControllerTest {
 
     @MockBean
     private ParkingTransactionService parkingTransactionService;
+
+    @MockBean
+    private BillingService billingService;
 
     private CheckInRequest checkInRequest;
     private CheckOutRequest checkOutRequest;
