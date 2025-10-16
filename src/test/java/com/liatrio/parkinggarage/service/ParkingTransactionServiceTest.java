@@ -45,6 +45,7 @@ class ParkingTransactionServiceTest {
 
     private Floor floor;
     private Bay bay;
+    private SpotType spotType;
     private ParkingSpot parkingSpot;
     private Car car;
     private ParkingTransaction transaction;
@@ -69,11 +70,18 @@ class ParkingTransactionServiceTest {
                 .active(true)
                 .build();
 
+        spotType = SpotType.builder()
+                .id(1L)
+                .name("REGULAR")
+                .description("Regular sized parking spot")
+                .active(true)
+                .build();
+
         parkingSpot = ParkingSpot.builder()
                 .id(1L)
                 .spotIdentifier("F1-A-01")
                 .spotNumber("01")
-                .spotType(SpotType.REGULAR)
+                .spotType(spotType)
                 .bay(bay)
                 .active(true)
                 .transactions(new ArrayList<>())

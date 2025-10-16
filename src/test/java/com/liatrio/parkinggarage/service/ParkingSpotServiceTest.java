@@ -10,6 +10,7 @@ import com.liatrio.parkinggarage.exception.ResourceNotFoundException;
 import com.liatrio.parkinggarage.mapper.EntityMapper;
 import com.liatrio.parkinggarage.repository.BayRepository;
 import com.liatrio.parkinggarage.repository.ParkingSpotRepository;
+import com.liatrio.parkinggarage.repository.SpotTypeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +36,9 @@ class ParkingSpotServiceTest {
     private BayRepository bayRepository;
 
     @Mock
+    private SpotTypeRepository spotTypeRepository;
+
+    @Mock
     private EntityMapper entityMapper;
 
     @InjectMocks
@@ -42,6 +46,7 @@ class ParkingSpotServiceTest {
 
     private Floor floor;
     private Bay bay;
+    private SpotType spotType;
     private ParkingSpot parkingSpot;
     private ParkingSpotDto parkingSpotDto;
 
@@ -62,11 +67,18 @@ class ParkingSpotServiceTest {
                 .active(true)
                 .build();
 
+        spotType = SpotType.builder()
+                .id(1L)
+                .name("REGULAR")
+                .description("Regular sized parking spot")
+                .active(true)
+                .build();
+
         parkingSpot = ParkingSpot.builder()
                 .id(1L)
                 .spotIdentifier("F1-A-01")
                 .spotNumber("01")
-                .spotType(SpotType.REGULAR)
+                .spotType(spotType)
                 .bay(bay)
                 .active(true)
                 .transactions(new ArrayList<>())
@@ -76,7 +88,8 @@ class ParkingSpotServiceTest {
                 .id(1L)
                 .spotIdentifier("F1-A-01")
                 .spotNumber("01")
-                .spotType(SpotType.REGULAR)
+                .spotTypeId(1L)
+                .spotTypeName("REGULAR")
                 .bayId(1L)
                 .bayIdentifier("A")
                 .floorNumber(1)
@@ -146,6 +159,7 @@ class ParkingSpotServiceTest {
     void createParkingSpot_WhenValidData_ShouldCreateSpot() {
         // Arrange
         when(bayRepository.findById(1L)).thenReturn(Optional.of(bay));
+        when(spotTypeRepository.findById(1L)).thenReturn(Optional.of(spotType));
         when(parkingSpotRepository.findBySpotIdentifier("F1-A-01")).thenReturn(Optional.empty());
         when(parkingSpotRepository.save(any(ParkingSpot.class))).thenReturn(parkingSpot);
         when(entityMapper.toParkingSpotDto(parkingSpot)).thenReturn(parkingSpotDto);
@@ -163,6 +177,7 @@ class ParkingSpotServiceTest {
     void createParkingSpot_WhenSpotAlreadyExists_ShouldThrowException() {
         // Arrange
         when(bayRepository.findById(1L)).thenReturn(Optional.of(bay));
+        when(spotTypeRepository.findById(1L)).thenReturn(Optional.of(spotType));
         when(parkingSpotRepository.findBySpotIdentifier("F1-A-01")).thenReturn(Optional.of(parkingSpot));
 
         // Act & Assert
@@ -175,6 +190,7 @@ class ParkingSpotServiceTest {
         // Arrange
         when(parkingSpotRepository.findById(1L)).thenReturn(Optional.of(parkingSpot));
         when(bayRepository.findById(1L)).thenReturn(Optional.of(bay));
+        when(spotTypeRepository.findById(1L)).thenReturn(Optional.of(spotType));
         when(parkingSpotRepository.save(any(ParkingSpot.class))).thenReturn(parkingSpot);
         when(entityMapper.toParkingSpotDto(parkingSpot)).thenReturn(parkingSpotDto);
 

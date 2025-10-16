@@ -1,7 +1,6 @@
 package com.liatrio.parkinggarage.repository;
 
 import com.liatrio.parkinggarage.entity.ParkingSpot;
-import com.liatrio.parkinggarage.entity.SpotType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -18,7 +17,7 @@ public interface ParkingSpotRepository extends JpaRepository<ParkingSpot, Long> 
     
     List<ParkingSpot> findByActiveTrue();
     
-    List<ParkingSpot> findBySpotType(SpotType spotType);
+    List<ParkingSpot> findBySpotTypeId(Long spotTypeId);
     
     /**
      * Find available spots (active spots with no active transactions)

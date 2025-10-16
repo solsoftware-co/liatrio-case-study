@@ -2,7 +2,6 @@ package com.liatrio.parkinggarage.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liatrio.parkinggarage.dto.*;
-import com.liatrio.parkinggarage.entity.SpotType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -46,9 +45,17 @@ class ParkingIntegrationTest {
                 .andExpect(status().isCreated()).andReturn();
         BayDto createdBay = objectMapper.readValue(bayResult.getResponse().getContentAsString(), BayDto.class);
 
+        // Create spot type
+        SpotTypeDto spotTypeDto = SpotTypeDto.builder().name("REGULAR").description("Regular spot").build();
+        MvcResult spotTypeResult = mockMvc.perform(post("/api/spot-types")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(spotTypeDto)))
+                .andExpect(status().isCreated()).andReturn();
+        SpotTypeDto createdSpotType = objectMapper.readValue(spotTypeResult.getResponse().getContentAsString(), SpotTypeDto.class);
+
         // Create parking spot
         ParkingSpotDto spotDto = ParkingSpotDto.builder()
-                .spotIdentifier("TEST-A-01").spotNumber("01").spotType(SpotType.REGULAR).bayId(createdBay.getId()).build();
+                .spotIdentifier("TEST-A-01").spotNumber("01").spotTypeId(createdSpotType.getId()).bayId(createdBay.getId()).build();
         mockMvc.perform(post("/api/parking-spots")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(spotDto)))

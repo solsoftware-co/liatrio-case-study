@@ -29,10 +29,9 @@ public class ParkingSpot {
     @Column(nullable = false)
     private String spotNumber;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @Builder.Default
-    private SpotType spotType = SpotType.REGULAR;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "spot_type_id", nullable = false)
+    private SpotType spotType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bay_id", nullable = false)

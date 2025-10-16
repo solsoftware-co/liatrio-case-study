@@ -24,6 +24,7 @@ public class DataSeeder {
             FloorRepository floorRepository,
             BayRepository bayRepository,
             ParkingSpotRepository parkingSpotRepository,
+            SpotTypeRepository spotTypeRepository,
             CarRepository carRepository,
             ParkingTransactionRepository transactionRepository) {
         
@@ -35,6 +36,34 @@ public class DataSeeder {
                 log.info("Data already exists, skipping seeding");
                 return;
             }
+            
+            // Create Spot Types
+            SpotType regularType = SpotType.builder()
+                    .name("REGULAR")
+                    .description("Regular sized parking spot")
+                    .active(true)
+                    .build();
+            
+            SpotType compactType = SpotType.builder()
+                    .name("COMPACT")
+                    .description("Compact sized parking spot")
+                    .active(true)
+                    .build();
+            
+            SpotType largeType = SpotType.builder()
+                    .name("LARGE")
+                    .description("Large sized parking spot for trucks/SUVs")
+                    .active(true)
+                    .build();
+            
+            SpotType handicapType = SpotType.builder()
+                    .name("HANDICAP")
+                    .description("Handicap accessible parking spot")
+                    .active(true)
+                    .build();
+            
+            spotTypeRepository.saveAll(List.of(regularType, compactType, largeType, handicapType));
+            log.info("Created 4 spot types");
             
             // Create Floors
             Floor floor1 = Floor.builder()
@@ -82,29 +111,29 @@ public class DataSeeder {
             List<ParkingSpot> spots = new ArrayList<>();
             
             // Floor 1 - Bay A (10 spots)
-            spots.addAll(createSpotsForBay(bay1A, 1, 10, SpotType.REGULAR));
+            spots.addAll(createSpotsForBay(bay1A, 1, 10, regularType));
             
             // Floor 1 - Bay B (8 spots, 2 handicap)
-            spots.addAll(createSpotsForBay(bay1B, 1, 6, SpotType.REGULAR));
-            spots.addAll(createSpotsForBay(bay1B, 7, 8, SpotType.HANDICAP));
+            spots.addAll(createSpotsForBay(bay1B, 1, 6, regularType));
+            spots.addAll(createSpotsForBay(bay1B, 7, 8, handicapType));
             
             // Floor 1 - Bay C (10 spots, compact)
-            spots.addAll(createSpotsForBay(bay1C, 1, 10, SpotType.COMPACT));
+            spots.addAll(createSpotsForBay(bay1C, 1, 10, compactType));
             
             // Floor 2 - Bay A (10 spots)
-            spots.addAll(createSpotsForBay(bay2A, 1, 10, SpotType.REGULAR));
+            spots.addAll(createSpotsForBay(bay2A, 1, 10, regularType));
             
             // Floor 2 - Bay B (10 spots)
-            spots.addAll(createSpotsForBay(bay2B, 1, 10, SpotType.REGULAR));
+            spots.addAll(createSpotsForBay(bay2B, 1, 10, regularType));
             
             // Floor 2 - Bay C (5 large spots)
-            spots.addAll(createSpotsForBay(bay2C, 1, 5, SpotType.LARGE));
+            spots.addAll(createSpotsForBay(bay2C, 1, 5, largeType));
             
             // Floor 3 - Bay A (15 spots)
-            spots.addAll(createSpotsForBay(bay3A, 1, 15, SpotType.REGULAR));
+            spots.addAll(createSpotsForBay(bay3A, 1, 15, regularType));
             
             // Floor 3 - Bay B (15 spots)
-            spots.addAll(createSpotsForBay(bay3B, 1, 15, SpotType.REGULAR));
+            spots.addAll(createSpotsForBay(bay3B, 1, 15, regularType));
             
             parkingSpotRepository.saveAll(spots);
             log.info("Created {} parking spots", spots.size());

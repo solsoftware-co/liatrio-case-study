@@ -1,6 +1,5 @@
 package com.liatrio.parkinggarage.dto;
 
-import com.liatrio.parkinggarage.entity.SpotType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,8 +21,10 @@ public class ParkingSpotDto {
     @NotBlank(message = "Spot number is required")
     private String spotNumber;
     
-    @NotNull(message = "Spot type is required")
-    private SpotType spotType;
+    @NotNull(message = "Spot type ID is required")
+    private Long spotTypeId;
+    
+    private String spotTypeName;
     
     @NotNull(message = "Bay ID is required")
     private Long bayId;

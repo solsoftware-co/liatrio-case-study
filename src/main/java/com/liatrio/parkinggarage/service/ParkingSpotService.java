@@ -3,11 +3,13 @@ package com.liatrio.parkinggarage.service;
 import com.liatrio.parkinggarage.dto.ParkingSpotDto;
 import com.liatrio.parkinggarage.entity.Bay;
 import com.liatrio.parkinggarage.entity.ParkingSpot;
+import com.liatrio.parkinggarage.entity.SpotType;
 import com.liatrio.parkinggarage.exception.ResourceAlreadyExistsException;
 import com.liatrio.parkinggarage.exception.ResourceNotFoundException;
 import com.liatrio.parkinggarage.mapper.EntityMapper;
 import com.liatrio.parkinggarage.repository.BayRepository;
 import com.liatrio.parkinggarage.repository.ParkingSpotRepository;
+import com.liatrio.parkinggarage.repository.SpotTypeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class ParkingSpotService {
 
     private final ParkingSpotRepository parkingSpotRepository;
     private final BayRepository bayRepository;
+    private final SpotTypeRepository spotTypeRepository;
     private final EntityMapper entityMapper;
 
     @Transactional(readOnly = true)
@@ -80,6 +83,9 @@ public class ParkingSpotService {
         Bay bay = bayRepository.findById(spotDto.getBayId())
                 .orElseThrow(() -> new ResourceNotFoundException("Bay", "id", spotDto.getBayId()));
         
+        SpotType spotType = spotTypeRepository.findById(spotDto.getSpotTypeId())
+                .orElseThrow(() -> new ResourceNotFoundException("SpotType", "id", spotDto.getSpotTypeId()));
+        
         if (parkingSpotRepository.findBySpotIdentifier(spotDto.getSpotIdentifier()).isPresent()) {
             throw new ResourceAlreadyExistsException("ParkingSpot", "spotIdentifier", spotDto.getSpotIdentifier());
         }
@@ -87,7 +93,7 @@ public class ParkingSpotService {
         ParkingSpot spot = ParkingSpot.builder()
                 .spotIdentifier(spotDto.getSpotIdentifier())
                 .spotNumber(spotDto.getSpotNumber())
-                .spotType(spotDto.getSpotType())
+                .spotType(spotType)
                 .bay(bay)
                 .active(true)
                 .build();
@@ -108,6 +114,9 @@ public class ParkingSpotService {
         Bay bay = bayRepository.findById(spotDto.getBayId())
                 .orElseThrow(() -> new ResourceNotFoundException("Bay", "id", spotDto.getBayId()));
         
+        SpotType spotType = spotTypeRepository.findById(spotDto.getSpotTypeId())
+                .orElseThrow(() -> new ResourceNotFoundException("SpotType", "id", spotDto.getSpotTypeId()));
+        
         // Check if spot identifier is being changed and if it already exists
         if (!spot.getSpotIdentifier().equals(spotDto.getSpotIdentifier()) &&
                 parkingSpotRepository.findBySpotIdentifier(spotDto.getSpotIdentifier()).isPresent()) {
@@ -116,7 +125,7 @@ public class ParkingSpotService {
         
         spot.setSpotIdentifier(spotDto.getSpotIdentifier());
         spot.setSpotNumber(spotDto.getSpotNumber());
-        spot.setSpotType(spotDto.getSpotType());
+        spot.setSpotType(spotType);
         spot.setBay(bay);
         if (spotDto.getActive() != null) {
             spot.setActive(spotDto.getActive());
